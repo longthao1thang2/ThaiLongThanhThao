@@ -3,529 +3,677 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Long ❤️ Thảo - Thế Giới Riêng</title>
+    <title>Long 💖 Thảo - Hành Trình Kẹo Ngọt</title>
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Quicksand:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
     
+    <!-- Google Fonts: Itim & Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Itim&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
     <style>
         :root {
-            --primary-pink: #ff4b72;
-            --secondary-pink: #ff7eb3;
-            --bg-gradient: linear-gradient(135deg, #fff0f5 0%, #ffe4e1 50%, #ffd1dc 100%);
-            --text-dark: #4a4a4a;
+            --pink-main: #ff5c8a;
+            --pink-light: #ff8fa3;
+            --pink-bg: #fff0f3;
+            --text-dark: #641220;
+            --white-glass: rgba(255, 255, 255, 0.85);
         }
 
         body {
             font-family: 'Quicksand', sans-serif;
-            background: var(--bg-gradient);
+            background-color: var(--pink-bg);
             color: var(--text-dark);
             overflow-x: hidden;
             scroll-behavior: smooth;
             cursor: pointer;
-            min-height: 100vh;
         }
 
-        .font-romantic { font-family: 'Dancing Script', cursive; }
-        .font-cute { font-family: 'Pacifico', cursive; }
+        .font-cute { font-family: 'Itim', cursive; }
 
-        /* Glassmorphism */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 8px 32px 0 rgba(255, 117, 140, 0.2);
-        }
-
-        /* Animations */
-        .pulse-heart {
-            animation: heartbeat 1.2s infinite;
-            display: inline-block;
+        .bg-magic {
+            background-color: var(--pink-bg);
+            background-image: 
+                radial-gradient(#ffb3c6 2px, transparent 2px),
+                linear-gradient(180deg, #fff0f3 0%, #ffe5ec 100%);
+            background-size: 30px 30px, 100% 100%;
+            background-attachment: fixed;
         }
 
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.3); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.3); }
-            70% { transform: scale(1); }
+        /* ----- MÂY TRÔI ----- */
+        .clouds-container {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .cloud {
+            position: absolute; background: rgba(255, 255, 255, 0.6); border-radius: 200px;
+            filter: blur(8px); animation: floatCloud linear infinite;
+        }
+        .cloud::before, .cloud::after {
+            content: ''; position: absolute; background: rgba(255, 255, 255, 0.6); border-radius: 50%;
+        }
+        .cloud-1 { top: 10%; width: 120px; height: 40px; animation-duration: 40s; left: -150px; }
+        .cloud-1::before { width: 50px; height: 50px; top: -20px; left: 15px; }
+        .cloud-1::after { width: 40px; height: 40px; top: -15px; right: 20px; }
+        
+        .cloud-2 { top: 40%; width: 200px; height: 60px; animation-duration: 60s; left: -250px; opacity: 0.7;}
+        .cloud-2::before { width: 80px; height: 80px; top: -40px; left: 30px; }
+        .cloud-2::after { width: 60px; height: 60px; top: -20px; right: 30px; }
+
+        @keyframes floatCloud {
+            from { transform: translateX(0); }
+            to { transform: translateX(120vw); }
         }
 
-        /* Connecting Loading Animation */
-        .connecting-pulse {
-            animation: connectPulse 2s infinite ease-in-out;
+        /* ----- CHUỘT LẤP LÁNH & NỔ TRÁI TIM ----- */
+        .sparkle-trail {
+            position: absolute; pointer-events: none; z-index: 9999;
+            animation: fallAndFade 1s forwards cubic-bezier(0.1, 1, 0.3, 1);
+            font-size: 14px;
         }
-        @keyframes connectPulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 20px #ff4b72); }
-            50% { transform: scale(1.5); opacity: 1; filter: drop-shadow(0 0 50px #ff4b72); }
-        }
-        .text-blink {
-            animation: textBlink 1.5s infinite;
-        }
-        @keyframes textBlink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        @keyframes fallAndFade {
+            0% { transform: scale(1) translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: scale(0) translateY(30px) rotate(90deg); opacity: 0; }
         }
 
-        /* Floating Background (Hearts & Fireflies) */
-        .floating-item {
-            position: fixed;
-            bottom: -10vh;
-            animation: floatUp linear infinite;
-            opacity: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .firefly {
-            width: 6px;
-            height: 6px;
-            background-color: #ffeb3b;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ffeb3b;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(0.5) rotate(0deg) translateX(0); opacity: 0; }
-            20% { opacity: 0.8; }
-            50% { transform: translateY(-50vh) scale(1) rotate(180deg) translateX(20px); }
-            80% { opacity: 0.6; }
-            100% { transform: translateY(-110vh) scale(1.5) rotate(360deg) translateX(-20px); opacity: 0; }
-        }
-
-        /* Click Ripple Hearts */
-        .click-heart {
-            position: absolute;
-            font-size: 1.5rem;
-            animation: popHeart 0.8s ease-out forwards;
-            pointer-events: none;
-            z-index: 9999;
+        .click-burst {
+            position: absolute; pointer-events: none; z-index: 10000;
             transform: translate(-50%, -50%);
+            animation: burstPop 0.8s forwards ease-out;
+            font-size: 24px;
+        }
+        @keyframes burstPop {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 1; }
+            50% { transform: translate(-50%, -150%) scale(1.5); opacity: 0.8; }
+            100% { transform: translate(-50%, -200%) scale(2); opacity: 0; }
         }
 
-        @keyframes popHeart {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            50% { transform: translate(-50%, -100%) scale(1.5); opacity: 0.8; }
-            100% { transform: translate(-50%, -150%) scale(2); opacity: 0; }
+        /* ----- KHỐI GIAO DIỆN ----- */
+        .kawaii-card {
+            background: var(--white-glass);
+            backdrop-filter: blur(10px); border-radius: 40px; border: 4px solid #fff;
+            box-shadow: 0 15px 35px rgba(255, 92, 138, 0.15), inset 0 -6px 0 rgba(255, 255, 255, 0.8);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .kawaii-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 45px rgba(255, 92, 138, 0.2), inset 0 -6px 0 rgba(255, 255, 255, 0.9);
         }
 
-        /* Polaroid Gallery */
-        .polaroid {
-            background: white;
-            padding: 10px 10px 25px 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            break-inside: avoid;
-            margin-bottom: 20px;
+        .btn-jelly {
+            background: linear-gradient(135deg, var(--pink-main), var(--pink-light));
+            color: white; border-radius: 999px; font-weight: 800; font-size: 1.2rem;
+            border: 3px solid white;
+            box-shadow: 0 8px 0 #ff3366, 0 15px 20px rgba(255, 92, 138, 0.4);
+            transition: all 0.1s; cursor: pointer; position: relative; overflow: hidden;
         }
-        .polaroid:hover {
-            transform: scale(1.05) rotate(0deg) !important;
-            box-shadow: 0 15px 30px rgba(255, 75, 114, 0.4);
-            z-index: 20;
-        }
-        .polaroid-img {
-            background: #ffe4e1;
-            width: 100%;
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            border: 1px solid #f0f0f0;
-            overflow: hidden;
-        }
-        .polaroid-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .btn-jelly:active {
+            transform: translateY(8px);
+            box-shadow: 0 0px 0 #ff3366, 0 5px 10px rgba(255, 92, 138, 0.3);
         }
 
-        /* Gradient Text */
-        .text-gradient {
-            background: linear-gradient(to right, #ff4b72, #ff7eb3, #ff4b72);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shine 3s linear infinite;
+        .input-cute {
+            width: 100%; background: #fff; border: 3px solid #ffe5ec; border-radius: 25px; padding: 18px 24px;
+            font-size: 1.2rem; font-weight: 700; color: var(--pink-main); text-align: center;
+            transition: all 0.3s; outline: none; box-shadow: inset 0 4px 6px rgba(0,0,0,0.02);
+        }
+        .input-cute:focus {
+            border-color: var(--pink-light); box-shadow: 0 0 0 6px rgba(255, 143, 163, 0.2); transform: scale(1.02);
+        }
+        .input-cute::placeholder { color: #ffccd5; font-weight: 600; font-family: 'Quicksand', sans-serif;}
+
+        .timer-widget {
+            background: white; border-radius: 30px; width: 110px; height: 120px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 15px 25px rgba(255, 92, 138, 0.1); border: 3px solid #fff;
+            position: relative; overflow: hidden; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .timer-widget:hover { transform: translateY(-10px) rotate(3deg); border-color: #ffb3c6; }
+        .timer-widget::after {
+            content: ''; position: absolute; top: 5px; right: 5px;
+            width: 15px; height: 15px; background: rgba(255,255,255,0.8); border-radius: 50%;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
+        /* ----- ĐĨA THAN NHẠC ----- */
+        .vinyl-player {
+            position: fixed; bottom: 20px; left: 20px; z-index: 100;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: #222; border: 4px solid #fff;
+            box-shadow: 0 5px 15px rgba(255, 92, 138, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            animation: spinVinyl 4s linear infinite; cursor: pointer;
+        }
+        .vinyl-player::before {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            background: var(--pink-main); border-radius: 50%; border: 3px solid #fff;
+        }
+        .vinyl-player::after {
+            content: '🎵'; position: absolute; top: -15px; right: -15px; font-size: 20px;
+            animation: floatNote 2s infinite alternate;
+        }
+        .vinyl-player.paused { animation-play-state: paused; }
+        .vinyl-player.paused::after { display: none; }
+        @keyframes spinVinyl { 100% { transform: rotate(360deg); } }
+        @keyframes floatNote { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10px) rotate(15deg); opacity: 0; } }
+
+        /* ----- ẢNH POLAROID ----- */
+        .scrapbook-img {
+            background: white; padding: 12px 12px 40px 12px;
+            border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+            position: relative; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            break-inside: avoid; margin-bottom: 30px; border: 1px solid #f0f0f0;
+        }
+        .scrapbook-img:hover {
+            transform: scale(1.08) rotate(0deg) !important; z-index: 20; box-shadow: 0 20px 40px rgba(255, 92, 138, 0.25);
+        }
+        .img-container {
+            width: 100%; border-radius: 8px; overflow: hidden; background: #ffe5ec;
+        }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .washi-tape {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%) rotate(-3deg);
+            width: 100px; height: 28px; background-color: #ffccd5;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.5) 5px, rgba(255,255,255,0.5) 10px);
+            opacity: 0.9; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2;
+            mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 28" xmlns="http://www.w3.org/2000/svg"><path d="M0,2 Q2,0 4,2 T8,2 T12,2 T16,2 T20,2 T24,2 T28,2 T32,2 T36,2 T40,2 T44,2 T48,2 T52,2 T56,2 T60,2 T64,2 T68,2 T72,2 T76,2 T80,2 T84,2 T88,2 T92,2 T96,2 T100,2 L100,26 Q98,28 96,26 T92,26 T88,26 T84,26 T80,26 T76,26 T72,26 T68,26 T64,26 T60,26 T56,26 T52,26 T48,26 T44,26 T40,26 T36,26 T32,26 T28,26 T24,26 T20,26 T16,26 T12,26 T8,26 T4,26 T0,26 Z"/></svg>');
+            mask-size: 100% 100%; -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 28" xmlns="http://www.w3.org/2000/svg"><path d="M0,2 Q2,0 4,2 T8,2 T12,2 T16,2 T20,2 T24,2 T28,2 T32,2 T36,2 T40,2 T44,2 T48,2 T52,2 T56,2 T60,2 T64,2 T68,2 T72,2 T76,2 T80,2 T84,2 T88,2 T92,2 T96,2 T100,2 L100,26 Q98,28 96,26 T92,26 T88,26 T84,26 T80,26 T76,26 T72,26 T68,26 T64,26 T60,26 T56,26 T52,26 T48,26 T44,26 T40,26 T36,26 T32,26 T28,26 T24,26 T20,26 T16,26 T12,26 T8,26 T4,26 T0,26 Z"/></svg>');
+            -webkit-mask-size: 100% 100%;
         }
 
-        /* Custom Timer Box */
-        .timer-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 85px;
-            height: 85px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: inset 0 0 10px rgba(255, 117, 140, 0.1), 0 5px 15px rgba(255, 75, 114, 0.15);
-            margin: 0 10px;
-            border: 2px solid #fff;
-            position: relative;
-            overflow: hidden;
+        /* ----- THÔNG BÁO (TOAST) ----- */
+        #cute-toast {
+            position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%);
+            background: white; padding: 14px 30px; border-radius: 999px;
+            box-shadow: 0 10px 30px rgba(255, 92, 138, 0.3); border: 3px solid #ffb3c6;
+            display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.1rem; color: var(--pink-main);
+            transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); z-index: 9999;
         }
+        #cute-toast.show { bottom: 40px; }
 
-        /* Custom Input */
-        .love-input {
-            width: 100%;
-            padding: 12px 20px;
-            border-radius: 30px;
-            border: 2px solid #ffd1dc;
-            background: rgba(255, 255, 255, 0.9);
-            outline: none;
-            transition: all 0.3s;
-            font-weight: 500;
-            color: #ff4b72;
-        }
-        .love-input:focus {
-            border-color: #ff4b72;
-            box-shadow: 0 0 15px rgba(255, 75, 114, 0.2);
-        }
-        .love-input::placeholder {
-            color: #ffa0b4;
-        }
-
-        /* Utilities */
+        .heart-beat { animation: heartbeat 1s infinite; display: inline-block; }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 15%, 45% { transform: scale(1.25); } 30% { transform: scale(1); } }
+        
         .hidden-section { display: none !important; }
-        .fade-in { animation: fadeIn 0.8s forwards; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+        .sticker-badge {
+            background: #ff5c8a; color: white; padding: 8px 24px; border-radius: 999px;
+            font-family: 'Itim', cursive; font-size: 1.4rem; font-weight: 400;
+            display: inline-flex; align-items: center; gap: 8px;
+            box-shadow: 0 5px 15px rgba(255, 92, 138, 0.4); border: 2px dashed rgba(255,255,255,0.6);
+            transform: rotate(-3deg);
+        }
     </style>
 </head>
-<body>
+<body class="bg-magic">
 
-    <!-- ================= 1. LOGIN SECTION ================= -->
+    <!-- BẦU TRỜI MÂY TRÔI & HIỆU ỨNG CHUỘT -->
+    <div class="clouds-container">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+    </div>
+    <div id="cursor-effects-container"></div>
+
+    <!-- Nút Bật/Tắt Nhạc -->
+    <div id="vinyl-btn" class="vinyl-player" title="Bật/Tắt Giai Điệu Tình Yêu"></div>
+
+    <!-- Thông báo cute (Tự động tắt sau 3s) -->
+    <div id="cute-toast">
+        <span class="text-2xl" id="toast-icon">🪄</span> <span id="toast-msg">Đã lưu ảnh nhé!</span>
+    </div>
+
+    <!-- ================= 1. TRANG ĐĂNG NHẬP (Ổ KHÓA TÌNH YÊU) ================= -->
     <div id="login-section" class="min-h-screen flex items-center justify-center p-4 relative z-50">
-        <div class="glass-panel p-8 md:p-12 rounded-[40px] max-w-md w-full text-center shadow-2xl relative">
-            <div class="absolute -top-10 left-1/2 transform -translate-x-1/2 text-7xl pulse-heart drop-shadow-lg">
-                🔐
-            </div>
+        <div class="kawaii-card p-10 md:p-14 w-full max-w-[450px] text-center relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-100 rounded-full mix-blend-multiply filter blur-2xl opacity-70"></div>
             
-            <h1 class="font-romantic text-4xl font-bold text-pink-500 mt-6 mb-2">Chìa Khóa Vào Tim</h1>
-            <p class="text-gray-500 mb-8 text-sm">Vui lòng nhập mật mã tình yêu để vào vương quốc của Long & Thảo</p>
+            <div class="text-[5rem] mb-2 heart-beat drop-shadow-lg">💌</div>
+            
+            <h1 class="font-cute text-5xl text-[#ff5c8a] mb-2 font-normal leading-tight">
+                Vương Quốc <br> Của Long & Thảo
+            </h1>
+            <p class="font-bold text-[#ff8fa3] mb-10">Nhập đúng mật mã để vào nha 🍓</p>
 
-            <div class="space-y-5">
+            <div class="space-y-6">
                 <div>
-                    <input type="text" id="username" class="love-input" placeholder="Tài khoản (Gợi ý: tên 2 người)" autocomplete="off">
+                    <input type="text" id="username" class="input-cute" placeholder="Tên đôi mình (VD: longthao)" autocomplete="off">
                 </div>
                 <div>
-                    <input type="password" id="password" class="love-input" placeholder="Mật khẩu (Gợi ý: Ngày bắt đầu)" autocomplete="off">
+                    <input type="password" id="password" class="input-cute" placeholder="Mật mã (Ngày quen nhau)" autocomplete="off">
                 </div>
-                <div id="login-error" class="text-red-400 text-sm hidden font-medium">Sai mật mã rồi, thử lại nha! 🥺</div>
                 
-                <button onclick="handleLogin()" class="w-full mt-4 bg-gradient-to-r from-pink-400 to-pink-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-[0_5px_15px_rgba(255,105,180,0.4)] hover:scale-105 transition-transform duration-300">
-                    Mở Khóa Trái Tim ❤️
+                <div id="login-error" class="text-red-500 text-sm hidden font-bold">
+                    Hong đúng rồi, nhập lại đi nè! 🥺
+                </div>
+                
+                <button onclick="handleLogin()" class="btn-jelly w-full py-4 mt-4">
+                    Mở Khóa Trái Tim ✨
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ================= 2. LOADING SECTION ================= -->
-    <div id="loading-section" class="hidden-section min-h-screen flex flex-col items-center justify-center relative z-50 bg-[#fff0f5]">
-        <div class="text-8xl connecting-pulse mb-8">💖</div>
-        <h2 class="font-cute text-3xl md:text-4xl text-pink-500 text-blink tracking-wide">
-            Đang kết nối vào trái tim...
-        </h2>
-        <p class="mt-4 text-gray-500 italic">Chuẩn bị bước vào thế giới của hai đứa</p>
-    </div>
-
-    <!-- ================= 3. MAIN APP SECTION ================= -->
-    <div id="main-section" class="hidden-section relative">
-        
-        <!-- Background Animations Container -->
-        <div id="bg-container" class="fixed inset-0 pointer-events-none z-0 overflow-hidden"></div>
-
-        <!-- Main Content Wrapper -->
-        <div class="relative z-10 fade-in">
-            
-            <!-- Hero Section -->
-            <section class="min-h-screen flex flex-col items-center justify-center text-center p-4 relative pt-20">
-                <div class="glass-panel p-8 md:p-16 rounded-[40px] max-w-4xl w-full mx-auto transform transition-all duration-700 hover:shadow-2xl">
-                    <h1 class="font-cute text-5xl md:text-7xl mb-2 text-pink-500 drop-shadow-sm">Hồ Thái Long</h1>
-                    <div class="flex items-center justify-center space-x-4 my-6">
-                        <div class="h-[2px] w-12 md:w-24 bg-pink-300"></div>
-                        <div class="text-2xl md:text-3xl font-romantic text-gray-500 italic">đang bám nhau với</div>
-                        <div class="h-[2px] w-12 md:w-24 bg-pink-300"></div>
-                    </div>
-                    <h1 class="font-cute text-5xl md:text-7xl mb-8 text-pink-500 drop-shadow-sm">Đoàn Thị Thanh Thảo</h1>
-                    <div class="text-6xl mb-6 pulse-heart filter drop-shadow-lg">💞</div>
-                    <p class="text-lg md:text-xl text-gray-700 mb-8 font-medium max-w-2xl mx-auto">
-                        "Trái đất có hơn 8 tỷ người, nhưng Long chỉ muốn bám lấy mỗi mình Thảo thôi. Kể từ ngày 01/02/2026, thế giới này tự nhiên lại đẹp đẽ và rực rỡ đến lạ!"
-                    </p>
-                    <a href="#timer-section" class="inline-block bg-gradient-to-r from-pink-400 to-pink-500 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:scale-105 transition-transform">
-                        Xem Thời Gian Bám Nhau 👇
-                    </a>
-                </div>
-            </section>
-
-            <!-- Timer Section -->
-            <section id="timer-section" class="min-h-screen flex flex-col items-center justify-center p-6 relative">
-                <div class="text-center mb-12">
-                    <h2 class="font-romantic text-5xl md:text-6xl font-bold text-gradient mb-4">Hành Trình Gắn Bó</h2>
-                    <p class="text-gray-600 text-lg font-medium">Bắt đầu từ ngày 01 tháng 02 năm 2026</p>
-                </div>
-                <div class="flex flex-wrap justify-center gap-y-6 md:gap-y-0 z-10">
-                    <div class="timer-box hover:-translate-y-2 transition-transform">
-                        <span id="days" class="text-4xl font-bold text-pink-600">0</span>
-                        <span class="text-xs text-gray-500 font-bold uppercase mt-1">Ngày</span>
-                    </div>
-                    <div class="timer-box hover:-translate-y-2 transition-transform">
-                        <span id="hours" class="text-4xl font-bold text-pink-600">0</span>
-                        <span class="text-xs text-gray-500 font-bold uppercase mt-1">Giờ</span>
-                    </div>
-                    <div class="timer-box hover:-translate-y-2 transition-transform">
-                        <span id="minutes" class="text-4xl font-bold text-pink-600">0</span>
-                        <span class="text-xs text-gray-500 font-bold uppercase mt-1">Phút</span>
-                    </div>
-                    <div class="timer-box hover:-translate-y-2 transition-transform">
-                        <span id="seconds" class="text-4xl font-bold text-pink-600">0</span>
-                        <span class="text-xs text-gray-500 font-bold uppercase mt-1">Giây</span>
-                    </div>
-                </div>
-                <div class="mt-12 bg-white/60 backdrop-blur px-8 py-4 rounded-full shadow-sm border border-white/80">
-                    <p class="text-pink-500 font-medium text-lg italic text-center">
-                        "Từng giây từng phút trôi qua, anh lại thấy bám em thêm một chút."
-                    </p>
-                </div>
-            </section>
-
-            <!-- Polaroid Gallery (Upload Section) -->
-            <section class="py-20 flex flex-col items-center justify-center p-6 bg-white/30 backdrop-blur-sm mt-10">
-                <div class="text-center mb-10">
-                    <h2 class="font-romantic text-4xl md:text-5xl font-bold text-gradient mb-4">Góc Kỷ Niệm Của Chúng Mình</h2>
-                    <p class="text-gray-600 mb-6">Hãy thêm những bức ảnh ngọt ngào nhất của hai đứa vào đây nhé!</p>
-                    
-                    <!-- Upload Button -->
-                    <label for="photo-upload" class="cursor-pointer inline-flex items-center justify-center gap-2 bg-pink-100 hover:bg-pink-200 text-pink-600 font-bold py-3 px-6 rounded-full border-2 border-pink-300 shadow-sm transition-colors relative z-20">
-                        📸 <span>Thêm Ảnh Của Chúng Mình</span>
-                    </label>
-                    <input type="file" id="photo-upload" class="hidden" accept="image/*" multiple>
-                </div>
-                
-                <!-- Gallery Grid -->
-                <div id="polaroid-gallery" class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 max-w-6xl w-full px-4">
-                    <!-- Default cards -->
-                    <div class="polaroid transform -rotate-2">
-                        <div class="polaroid-img text-pink-400">👩‍❤️‍👨</div>
-                        <div class="mt-4 text-center font-cute text-xl text-gray-700">Ngày đầu bám nhau</div>
-                    </div>
-                    <div class="polaroid transform rotate-3">
-                        <div class="polaroid-img text-red-400">💋</div>
-                        <div class="mt-4 text-center font-cute text-xl text-gray-700">Yêu thương đong đầy</div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Magic Candy -->
-            <section class="min-h-[80vh] flex flex-col items-center justify-center p-6">
-                <div class="glass-panel p-8 md:p-12 rounded-[40px] max-w-2xl w-full text-center relative overflow-hidden border-2 border-pink-100">
-                    <h2 class="font-romantic text-4xl font-bold text-pink-500 mb-4">Hộp Quà Bất Ngờ Của Thảo</h2>
-                    <p class="text-gray-600 mb-8 font-medium">Nhấn vào viên kẹo để xem Long muốn nói gì nhé!</p>
-                    
-                    <button id="message-btn" class="text-7xl hover:scale-125 transition-transform duration-300 focus:outline-none mb-8 filter drop-shadow-xl relative z-20">🍬</button>
-                    
-                    <div id="message-display" class="min-h-[120px] flex items-center justify-center bg-white/50 rounded-2xl p-4 border border-pink-50">
-                        <p class="text-xl md:text-2xl font-romantic text-pink-600 leading-relaxed font-bold hidden transition-opacity duration-500"></p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- The Letter -->
-            <section class="py-20 flex flex-col items-center justify-center p-4 mb-10">
-                <div class="bg-[#fdfbfb] p-8 md:p-16 rounded-sm shadow-2xl max-w-3xl w-full relative" style="box-shadow: 10px 10px 0px #ffd1dc, -5px -5px 20px rgba(0,0,0,0.05);">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-white/40 backdrop-blur-md rotate-[-2deg] shadow-sm"></div>
-                    
-                    <h2 class="font-cute text-4xl text-center text-red-400 mb-8">Lời Hứa Của Long</h2>
-                    
-                    <div class="text-gray-700 leading-loose text-lg text-justify font-medium space-y-4">
-                        <p>Gửi bé Thảo đáng yêu nhất quả đất,</p>
-                        <p>Người ta nói bắt đầu một mối quan hệ thì dễ, nhưng giữ được nhau mới khó. Nhưng từ cái ngày 01/02/2026 ấy, anh đã biết mình chẳng muốn đi đâu tìm kiếm nữa, vì anh đã "bám" trúng bến đỗ bình yên nhất rồi.</p>
-                        <p>Anh hứa sẽ luôn nhường nhịn em (dù đôi khi em hơi ngang bướng một xíu), sẽ luôn nắm tay em qua những con đường đông đúc, và sẽ mua đồ ăn ngon cho em mỗi khi em dỗi.</p>
-                        <p>Cảm ơn Thảo vì đã cho Long cơ hội được bước vào cuộc sống của em. Hãy để anh tiếp tục "bám" lấy em không chỉ bây giờ, mà là rất, rất lâu về sau nữa nhé!</p>
-                    </div>
-                    
-                    <div class="mt-12 text-right border-t border-dashed border-pink-200 pt-6">
-                        <p class="text-gray-500 text-sm mb-2">Người tự nguyện bị bám:</p>
-                        <p class="font-cute text-3xl text-pink-500 transform -rotate-2">Hồ Thái Long ❤️</p>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="text-center py-8 text-pink-500 font-bold pb-12">
-                <p>Trang web này được tạo ra bằng 100% tình yêu của Long dành cho Thảo ✨</p>
-            </footer>
-
+    <!-- ================= 2. MÀN HÌNH CHỜ (LOADING) ================= -->
+    <div id="loading-section" class="hidden-section min-h-screen flex flex-col items-center justify-center relative z-50">
+        <div class="text-[6rem] heart-beat mb-4 filter drop-shadow-[0_0_30px_rgba(255,92,138,0.5)]">🪄</div>
+        <h2 class="font-cute text-5xl text-[#ff5c8a] mb-2">Đang hóa phép...</h2>
+        <div class="flex gap-2 mt-4">
+            <div class="w-4 h-4 rounded-full bg-[#ff5c8a] animate-bounce"></div>
+            <div class="w-4 h-4 rounded-full bg-[#ff8fa3] animate-bounce" style="animation-delay: 0.1s;"></div>
+            <div class="w-4 h-4 rounded-full bg-[#ffb3c6] animate-bounce" style="animation-delay: 0.2s;"></div>
         </div>
     </div>
 
+    <!-- ================= 3. TRANG CHÍNH ================= -->
+    <div id="main-section" class="hidden-section relative z-10">
+        
+        <!-- Overlay tải ảnh -->
+        <div id="uploading-overlay" class="hidden-section fixed inset-0 bg-white/80 backdrop-blur-md z-[9998] flex flex-col items-center justify-center">
+            <div class="text-7xl mb-4 heart-beat">🚀</div>
+            <h3 class="font-cute text-4xl text-[#ff5c8a]">Đang cất ảnh lên mây...</h3>
+        </div>
+
+        <!-- PHẦN HEADER -->
+        <section class="min-h-screen flex flex-col items-center justify-center text-center p-4 pt-10">
+            <div class="kawaii-card p-10 md:p-16 max-w-4xl w-full mx-auto relative mt-10">
+                <div class="absolute -top-6 -left-6 text-5xl transform -rotate-12 animate-bounce">⭐</div>
+                <div class="absolute -bottom-6 -right-6 text-5xl transform rotate-12 animate-pulse">🌷</div>
+
+                <h1 class="font-cute text-6xl md:text-8xl text-[#641220] mb-6">
+                    Hồ Thái Long
+                </h1>
+                
+                <div class="my-6">
+                    <span class="sticker-badge">
+                        ✨ Đang bám nhau với ✨
+                    </span>
+                </div>
+
+                <h1 class="font-cute text-6xl md:text-8xl text-[#641220] mt-8 mb-8">
+                    Đoàn Thị Thanh Thảo
+                </h1>
+                
+                <div class="bg-white/60 p-6 rounded-3xl border-2 border-dashed border-[#ffb3c6] max-w-2xl mx-auto">
+                    <p class="font-semibold text-xl md:text-2xl text-[#ff5c8a] leading-relaxed">
+                        "Trái đất có hơn 8 tỷ người, nhưng Long chỉ muốn bám lấy mỗi mình Thảo thôi. Kể từ ngày 01/02/2026, thế giới này tự nhiên lại đẹp đẽ và rực rỡ đến lạ! 🍓"
+                    </p>
+                </div>
+                
+                <div class="mt-12">
+                    <button onclick="document.getElementById('timer-section').scrollIntoView()" class="btn-jelly px-10 py-4 text-xl">
+                        Xem Tụi Mình Đã Quen Bao Lâu 👇
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHẦN ĐẾM THỜI GIAN -->
+        <section id="timer-section" class="py-24 flex flex-col items-center justify-center px-4">
+            <h2 class="font-cute text-5xl md:text-[4rem] text-[#ff5c8a] mb-12 text-center drop-shadow-sm">
+                Đã bám nhau được... 🧸
+            </h2>
+            
+            <div class="flex flex-wrap justify-center gap-5 md:gap-8 z-10">
+                <div class="timer-widget">
+                    <span id="days" class="font-cute text-5xl md:text-6xl text-[#ff5c8a] z-10">0</span>
+                    <span class="text-sm font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Ngày</span>
+                </div>
+                <div class="timer-widget">
+                    <span id="hours" class="font-cute text-5xl md:text-6xl text-[#ff5c8a] z-10">0</span>
+                    <span class="text-sm font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Giờ</span>
+                </div>
+                <div class="timer-widget">
+                    <span id="minutes" class="font-cute text-5xl md:text-6xl text-[#ff5c8a] z-10">0</span>
+                    <span class="text-sm font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Phút</span>
+                </div>
+                <div class="timer-widget">
+                    <span id="seconds" class="font-cute text-5xl md:text-6xl text-[#ff5c8a] z-10">0</span>
+                    <span class="text-sm font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Giây</span>
+                </div>
+            </div>
+            
+            <div class="mt-14 kawaii-card px-10 py-5 inline-block transform -rotate-2">
+                <p class="font-bold text-[#641220] text-xl text-center">
+                    Cột mốc đáng nhớ: <span class="text-[#ff5c8a] font-cute text-2xl ml-2">01.02.2026</span> 🍒
+                </p>
+            </div>
+        </section>
+
+        <!-- PHÒNG TRANH NHẬT KÝ -->
+        <section class="py-24 flex flex-col items-center relative w-full px-4">
+            <div class="kawaii-card p-10 max-w-5xl w-full text-center mb-12 border-dashed">
+                <h2 class="font-cute text-5xl md:text-[4rem] text-[#ff5c8a] mb-4">Góc Sống Ảo Của Chúng Mình 📸</h2>
+                <p class="font-bold text-[#ff8fa3] mb-8 text-xl">Lưu lại ảnh ở đây, mọi người cùng xem được nhé!</p>
+                
+                <label for="photo-upload" class="cursor-pointer inline-flex items-center justify-center gap-3 btn-jelly py-4 px-10 text-xl w-full sm:w-auto">
+                    <span class="text-3xl">🖼️</span> 
+                    <span>Treo Thêm Ảnh Mới Nào</span>
+                </label>
+                <input type="file" id="photo-upload" class="hidden" accept="image/*">
+            </div>
+            
+            <!-- Khu vực hiển thị ảnh -->
+            <div id="polaroid-gallery" class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-8 max-w-[1400px] w-full px-4">
+                <div id="empty-state" class="col-span-full text-center py-20">
+                    <div class="text-[5rem] mb-4 animate-bounce">📦</div>
+                    <p class="font-cute text-4xl text-[#ff8fa3]">Chiếc hộp kỷ niệm đang trống rỗng, hãy úp ảnh đi nha!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LỜI HỨA CỦA LONG (LÁ THƯ) -->
+        <section class="py-24 flex flex-col items-center justify-center p-4 mb-20">
+            <div class="bg-[#fffdf9] p-10 md:p-16 max-w-3xl w-full relative rounded-3xl shadow-[0_20px_50px_rgba(255,92,138,0.15)] border-[10px] border-white outline outline-4 outline-[#ffb3c6]">
+                <div class="absolute top-6 right-6 w-16 h-20 bg-white border-2 border-dashed border-[#ff8fa3] p-1 flex items-center justify-center rotate-6 shadow-sm">
+                    <span class="text-3xl">🌸</span>
+                </div>
+
+                <h2 class="font-cute text-[3.5rem] text-[#ff5c8a] mb-8 font-normal text-center">Bức Thư Tình 📝</h2>
+                
+                <div class="font-semibold text-xl md:text-2xl text-[#641220] text-justify space-y-6 leading-relaxed">
+                    <p>Gửi bé Thảo đáng yêu nhất quả đất của anh,</p>
+                    <p>Người ta nói bắt đầu một mối quan hệ thì dễ, nhưng giữ được nhau mới khó. Nhưng từ cái ngày 01/02/2026 ấy, anh đã biết mình chẳng muốn đi đâu tìm kiếm nữa, vì anh đã "bám" trúng bến đỗ bình yên nhất rồi 🍓.</p>
+                    <p>Anh hứa sẽ luôn nhường nhịn em (dù đôi khi em hơi ngang bướng một xíu), sẽ luôn nắm tay em qua những con đường đông đúc, và sẽ mua đồ ăn ngon cho em mỗi khi em dỗi 🧋.</p>
+                    <p>Cảm ơn Thảo vì đã cho Long cơ hội được bước vào cuộc sống của em. Hãy để anh tiếp tục "bám" lấy em không chỉ bây giờ, mà là rất, rất lâu về sau nữa nhé! 💖</p>
+                </div>
+                
+                <div class="mt-12 text-right pr-4 pt-8 border-t-2 border-dashed border-[#ffe5ec]">
+                    <p class="font-bold text-[#ff8fa3] text-sm mb-2 uppercase tracking-widest">Người tự nguyện bị bám</p>
+                    <p class="font-cute text-[3.5rem] text-[#ff5c8a] transform -rotate-6 mt-2">Hồ Thái Long</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="text-center py-12 text-[#ff8fa3] font-bold text-lg">
+            <p>Xây dựng bằng 100% tình yêu và phép thuật ✨</p>
+            <p class="text-sm mt-2 opacity-80">Kỷ niệm được cất giữ vĩnh viễn trên Cloud Đám Mây ☁️</p>
+        </footer>
+
+    </div>
+
     <script>
-        // ================= 1. LOGIN LOGIC =================
-        function handleLogin() {
+        // ================= BIẾN TOÀN CỤC & UI HELPERS =================
+        let toastTimeout; // Biến lưu timeout để reset khi click liên tục
+
+        const showToast = (message, icon = "🪄") => {
+            const toast = document.getElementById('cute-toast');
+            document.getElementById('toast-msg').innerText = message;
+            document.getElementById('toast-icon').innerText = icon;
+            
+            // Xóa timeout cũ nếu thông báo trước đó chưa kịp tắt (giúp click liên tục không bị giật)
+            if(toastTimeout) clearTimeout(toastTimeout);
+            
+            // Hiện thông báo
+            toast.classList.add('show');
+            
+            // Tắt chính xác sau 3 giây
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000); // 3000ms = 3 giây
+        };
+
+
+        // ================= HIỆU ỨNG CHUỘT LẤP LÁNH =================
+        const cursorContainer = document.getElementById('cursor-effects-container');
+        const sparkEmojis = ['✨', '⭐', '💖', '🫧'];
+        let lastSparkTime = 0;
+
+        document.addEventListener('mousemove', function(e) {
+            const now = Date.now();
+            if (now - lastSparkTime > 50) { 
+                const spark = document.createElement('div');
+                spark.className = 'sparkle-trail';
+                spark.innerText = sparkEmojis[Math.floor(Math.random() * sparkEmojis.length)];
+                spark.style.left = (e.pageX - 10) + 'px';
+                spark.style.top = (e.pageY - 10) + 'px';
+                cursorContainer.appendChild(spark);
+                
+                setTimeout(() => spark.remove(), 1000);
+                lastSparkTime = now;
+            }
+        });
+
+
+        // ================= HIỆU ỨNG NỔ TRÁI TIM KHI CLICK =================
+        document.body.addEventListener('click', function(e) {
+            if(e.target.tagName === 'INPUT' || e.target.closest('label') || e.target.closest('button') || e.target.id === 'vinyl-btn') return;
+
+            const burstCount = 5; 
+            for(let i=0; i<burstCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'click-burst';
+                particle.innerText = ['❤️', '🍓', '🎀', '🌸'][Math.floor(Math.random()*4)];
+                
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 50;
+                particle.style.left = (e.pageX + Math.cos(angle)*distance) + 'px';
+                particle.style.top = (e.pageY + Math.sin(angle)*distance) + 'px';
+                particle.style.animationDuration = (0.5 + Math.random() * 0.5) + 's';
+                
+                cursorContainer.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        });
+
+
+        // ================= ĐĨA THAN NHẠC =================
+        const vinylBtn = document.getElementById('vinyl-btn');
+        let isPlaying = true;
+        vinylBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                vinylBtn.classList.remove('paused');
+                // Hiện thông báo và tắt sau 3 giây
+                showToast("Đã bật nhạc tình yêu", "🎵");
+            } else {
+                vinylBtn.classList.add('paused');
+                // Hiện thông báo và tắt sau 3 giây
+                showToast("Đã tắt nhạc", "🤫");
+            }
+        });
+
+
+        // ================= FIREBASE CLOUD SETUP (LƯU ẢNH VĨNH VIỄN) =================
+        let db, auth;
+        const initFirebase = async () => {
+            try {
+                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'long-thao-magic-app';
+                
+                if (!firebaseConfig) throw new Error("Missing Firebase Config");
+                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+                
+                auth = firebase.auth();
+                db = firebase.firestore();
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await auth.signInWithCustomToken(__initial_auth_token);
+                } else {
+                    await auth.signInAnonymously();
+                }
+
+                auth.onAuthStateChanged((user) => {
+                    if (user) listenToPhotos(appId);
+                });
+
+            } catch (error) {
+                console.error("Firebase init failed:", error);
+            }
+        };
+
+
+        // ================= APP LOGIC =================
+        
+        // 1. Logic Đăng Nhập
+        window.handleLogin = function() {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value.trim();
             const errorMsg = document.getElementById('login-error');
 
             if (user === 'longthao' && pass === '1thang2') {
                 errorMsg.classList.add('hidden');
-                
-                // Transition to Loading
                 document.getElementById('login-section').classList.add('hidden-section');
                 document.getElementById('loading-section').classList.remove('hidden-section');
 
-                // Wait 3 seconds, then show Main App
+                initFirebase(); 
+
                 setTimeout(() => {
                     document.getElementById('loading-section').classList.add('hidden-section');
                     document.getElementById('main-section').classList.remove('hidden-section');
-                    initMainApp(); // Initialize animations and timer
-                }, 3000);
+                    startTimer(); 
+                    
+                    // Hiện thông báo chào mừng và tự tắt sau 3 giây
+                    showToast("Chào mừng Long & Thảo về nhà", "🥰");
+                }, 2500);
             } else {
                 errorMsg.classList.remove('hidden');
-                // Shake effect on error
-                const panel = document.querySelector('#login-section .glass-panel');
-                panel.style.transform = 'translateX(-10px)';
-                setTimeout(() => panel.style.transform = 'translateX(10px)', 100);
-                setTimeout(() => panel.style.transform = 'translateX(-10px)', 200);
-                setTimeout(() => panel.style.transform = 'translateX(0)', 300);
+                const card = document.querySelector('.kawaii-card');
+                card.style.transform = 'scale(1) translateX(-15px)';
+                setTimeout(() => card.style.transform = 'scale(1) translateX(15px)', 100);
+                setTimeout(() => card.style.transform = 'scale(1) translateY(0)', 200);
             }
         }
 
-        // Allow pressing Enter to login
-        document.getElementById('password').addEventListener('keypress', function (e) {
+        document.getElementById('password').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') handleLogin();
         });
 
 
-        // ================= 2. MAIN APP LOGIC =================
-        let bgInterval;
-        let timerInterval;
-
-        function initMainApp() {
-            // Background Generator
-            const bgContainer = document.getElementById('bg-container');
-            const bgItems = ['💖', '🌸', '✨', 'firefly'];
-
-            function createBgItem() {
-                const el = document.createElement('div');
-                el.classList.add('floating-item');
-                const type = bgItems[Math.floor(Math.random() * bgItems.length)];
-                
-                if (type === 'firefly') el.classList.add('firefly');
-                else {
-                    el.innerText = type;
-                    el.style.fontSize = `${1 + Math.random() * 1.5}rem`;
-                }
-                el.style.left = `${Math.random() * 100}vw`;
-                const duration = 6 + Math.random() * 8;
-                el.style.animationDuration = `${duration}s`;
-                bgContainer.appendChild(el);
-                setTimeout(() => { el.remove(); }, duration * 1000);
-            }
-            bgInterval = setInterval(createBgItem, 300);
-
-            // Timer (Feb 1, 2026)
-            const startDate = new Date(2026, 1, 1, 0, 0, 0).getTime();
-            function updateTimer() {
+        // 2. Logic Đếm Giờ (Từ 01/02/2026)
+        function startTimer() {
+            // Lưu ý: Ngày 01/02/2026 là sau thời điểm hiện tại (năm 2026)
+            // Nếu thời gian hiện tại vẫn chưa tới ngày 01/02/2026, mình sẽ hiển thị 0 để không bị số âm
+            const startDate = new Date(2026, 1, 1, 0, 0, 0).getTime(); // 1 là Tháng 2 trong Javascript
+            
+            setInterval(() => {
                 const now = new Date().getTime();
                 const difference = now - startDate;
+                
+                // Tránh lỗi hiển thị số âm nếu mở trang trước ngày 01/02/2026
                 if (difference < 0) {
-                    document.getElementById('days').innerText = "0"; return;
+                    document.getElementById('days').innerText = "0";
+                    document.getElementById('hours').innerText = "00";
+                    document.getElementById('minutes').innerText = "00";
+                    document.getElementById('seconds').innerText = "00";
+                    return; 
                 }
+                
                 document.getElementById('days').innerText = Math.floor(difference / (1000 * 60 * 60 * 24));
                 document.getElementById('hours').innerText = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
                 document.getElementById('minutes').innerText = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
                 document.getElementById('seconds').innerText = Math.floor((difference % (1000 * 60)) / 1000).toString().padStart(2, '0');
-            }
-            timerInterval = setInterval(updateTimer, 1000);
-            updateTimer();
+            }, 1000);
         }
 
-        // Click Ripple Effect (Global but avoids inputs/buttons)
-        document.body.addEventListener('click', function(e) {
-            if(e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON' || e.target.tagName === 'LABEL' || e.target.closest('button') || e.target.closest('label')) return;
 
-            const heart = document.createElement('div');
-            heart.classList.add('click-heart');
-            heart.innerHTML = '❤️';
-            heart.style.left = `${e.pageX}px`;
-            heart.style.top = `${e.pageY}px`;
-            document.body.appendChild(heart);
-            setTimeout(() => { heart.remove(); }, 800);
-        });
-
-        // Photo Upload Logic
-        const uploadInput = document.getElementById('photo-upload');
-        const gallery = document.getElementById('polaroid-gallery');
-        const captions = ["Khoảnh khắc xinh đẹp", "Hai đứa mình nè", "Yêu Thảo nhất", "Bám nhau mãi nhé", "Kỷ niệm đáng nhớ"];
-
-        uploadInput.addEventListener('change', function(e) {
-            const files = e.target.files;
+        // ================= CLOUD STORAGE LOGIC (ẢNH) =================
+        function listenToPhotos(appId) {
+            const collectionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('photos');
             
-            for(let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (!file.type.startsWith('image/')){ continue } // Skip non-images
+            collectionRef.onSnapshot(snapshot => {
+                const gallery = document.getElementById('polaroid-gallery');
+                let photos = [];
+                snapshot.forEach(doc => photos.push({ id: doc.id, ...doc.data() }));
                 
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const imgUrl = event.target.result;
-                    const randomRotation = (Math.random() > 0.5 ? '' : '-') + Math.floor(Math.random() * 4);
-                    const randomCaption = captions[Math.floor(Math.random() * captions.length)];
+                photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+                if (photos.length === 0) return;
+
+                gallery.innerHTML = ''; 
+                photos.forEach(photo => renderCutePhoto(photo.base64, photo.caption, gallery));
+            }, error => console.error("Lỗi khi kéo ảnh:", error));
+        }
+
+        function renderCutePhoto(imgSrc, caption, container) {
+            const div = document.createElement('div');
+            const randomRotation = (Math.random() * 6 - 3).toFixed(1);
+            
+            div.className = `scrapbook-img`;
+            div.style.transform = `rotate(${randomRotation}deg)`;
+            
+            div.innerHTML = `
+                <div class="washi-tape"></div>
+                <div class="img-container">
+                    <img src="${imgSrc}" alt="Kỷ niệm Long Thảo" loading="lazy">
+                </div>
+                <div class="mt-5 text-center">
+                    <p class="font-cute text-3xl text-[#ff5c8a]">${caption}</p>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+
+        const uploadInput = document.getElementById('photo-upload');
+        const cuteCaptions = ["Khoảnh khắc cưng xỉu 💕", "Hai đứa mình nè 🍓", "Yêu Thảo nhất ✨", "Bám nhau mãi nhé 🫂", "Xinh gái quá chừng 🌸", "Đáng iu ghê 😍", "Best couple 👑"];
+
+        uploadInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+
+            document.getElementById('uploading-overlay').classList.remove('hidden-section');
+
+            try {
+                const base64Data = await compressImage(file);
+                
+                if (auth && auth.currentUser) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'long-thao-magic-app';
+                    const collectionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('photos');
                     
-                    const newPolaroid = document.createElement('div');
-                    newPolaroid.className = `polaroid transform rotate-${Math.abs(randomRotation)} ${randomRotation.includes('-') ? '-rotate-'+Math.abs(randomRotation) : ''} fade-in`;
+                    await collectionRef.add({
+                        base64: base64Data,
+                        caption: cuteCaptions[Math.floor(Math.random() * cuteCaptions.length)],
+                        timestamp: Date.now()
+                    });
                     
-                    newPolaroid.innerHTML = `
-                        <div class="polaroid-img">
-                            <img src="${imgUrl}" alt="Kỷ niệm Long Thảo">
-                        </div>
-                        <div class="mt-4 text-center font-cute text-xl text-gray-700">${randomCaption} 💕</div>
-                    `;
-                    
-                    // Thêm ảnh mới lên ĐẦU danh sách gallery
-                    gallery.prepend(newPolaroid);
-                };
-                reader.readAsDataURL(file);
+                    // Hiện thông báo up ảnh và tự tắt sau 3 giây
+                    showToast("Ting ting! Kỷ niệm đã được cất giữ", "🪄");
+                } else {
+                    throw new Error("Không kết nối được Cloud");
+                }
+            } catch (error) {
+                console.error("Lỗi Upload:", error);
+                showToast("Lỗi rùi, thử lại nha bé", "🥺");
+            } finally {
+                document.getElementById('uploading-overlay').classList.add('hidden-section');
+                uploadInput.value = '';
             }
-            // Reset input để có thể chọn lại ảnh giống nhau
-            uploadInput.value = '';
         });
 
-        // Candy Message Logic
-        const messages = [
-            "Thảo ơi, hôm nay em trông xinh xỉu luôn đó! 😍",
-            "Long hứa sẽ ngoan, chỉ bám mỗi Thảo thôi! 🥺",
-            "Mỗi lần thấy Thảo cười là tim Long lại lỡ mất một nhịp. 💓",
-            "Trà sữa có thể thiếu trân châu, nhưng Long không thể thiếu Thảo! 🧋",
-            "Nắm tay Thảo đi dạo là điều bình yên nhất trong ngày của Long. 🤝",
-            "Dù em có béo lên hay gầy đi, trong mắt Long em vẫn là công chúa. 👑"
-        ];
-        const messageBtn = document.getElementById('message-btn');
-        const messageDisplay = document.querySelector('#message-display p');
-        let isAnimating = false;
+        function compressImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 800;
+                        let width = img.width, height = img.height;
 
-        messageBtn.addEventListener('click', () => {
-            if (isAnimating) return;
-            isAnimating = true;
-            messageBtn.innerText = '🎁';
-            messageBtn.classList.add('pulse-heart');
-            messageDisplay.style.opacity = 0;
+                        if (width > height && width > MAX_SIZE) {
+                            height *= MAX_SIZE / width; width = MAX_SIZE;
+                        } else if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height; height = MAX_SIZE;
+                        }
 
-            setTimeout(() => {
-                messageDisplay.innerText = messages[Math.floor(Math.random() * messages.length)];
-                messageDisplay.classList.remove('hidden');
-                messageDisplay.style.opacity = 1;
-                messageBtn.innerText = '🍬';
-                messageBtn.classList.remove('pulse-heart');
-                isAnimating = false;
-            }, 600);
-        });
+                        canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6));
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
     </script>
 </body>
 </html>
+
 
