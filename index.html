@@ -11,7 +11,7 @@
     <!-- Google Fonts: Itim & Quicksand -->
     <link href="https://fonts.googleapis.com/css2?family=Itim&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (Sử dụng phiên bản tương thích) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -92,7 +92,7 @@
             100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
         }
 
-        /* ----- KHỐI GIAO DIỆN (UI BLOCKS) ----- */
+        /* ----- KHỐI GIAO DIỆN ----- */
         .kawaii-card {
             background: var(--white-glass);
             backdrop-filter: blur(12px); border-radius: 35px; border: 3px solid #fff;
@@ -122,13 +122,13 @@
         }
         .input-cute::placeholder { color: #ffb3c6; font-weight: 600; font-family: 'Quicksand', sans-serif;}
 
-        /* Widget Đồng Hồ (Cập nhật Reponsive cho Mobile) */
+        /* Widget Đồng Hồ (Reponsive) */
         .timer-widget {
             background: white; border-radius: 24px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             box-shadow: 0 10px 20px rgba(255, 92, 138, 0.1); border: 3px solid #fff;
             position: relative; overflow: hidden;
-            aspect-ratio: 1 / 1; /* Luôn giữ hình vuông hoàn hảo trên mọi màn hình */
+            aspect-ratio: 1 / 1; 
         }
         .timer-widget::after {
             content: ''; position: absolute; top: 6px; right: 6px;
@@ -138,24 +138,26 @@
         /* ----- ĐĨA THAN NHẠC ----- */
         .vinyl-player {
             position: fixed; bottom: 20px; left: 20px; z-index: 100;
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 55px; height: 55px; border-radius: 50%;
             background: #222; border: 3px solid #fff;
             box-shadow: 0 4px 12px rgba(255, 92, 138, 0.3);
             display: flex; align-items: center; justify-content: center;
-            animation: spinVinyl 4s linear infinite; cursor: pointer;
+            animation: spinVinyl 3s linear infinite; cursor: pointer;
+            transition: transform 0.2s;
         }
+        .vinyl-player:hover { transform: scale(1.1); }
         .vinyl-player::before {
             content: ''; position: absolute; width: 16px; height: 16px;
             background: var(--pink-main); border-radius: 50%; border: 2px solid #fff;
         }
         .vinyl-player::after {
-            content: '🎵'; position: absolute; top: -12px; right: -12px; font-size: 16px;
+            content: '🎵'; position: absolute; top: -12px; right: -12px; font-size: 18px;
             animation: floatNote 2s infinite alternate;
         }
         .vinyl-player.paused { animation-play-state: paused; }
         .vinyl-player.paused::after { display: none; }
         @keyframes spinVinyl { 100% { transform: rotate(360deg); } }
-        @keyframes floatNote { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-8px) rotate(15deg); opacity: 0; } }
+        @keyframes floatNote { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-10px) rotate(15deg); opacity: 0; } }
 
         /* ----- ẢNH POLAROID ----- */
         .scrapbook-img {
@@ -179,7 +181,7 @@
             opacity: 0.95; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 2;
         }
 
-        /* ----- THÔNG BÁO (TOAST) TỐI ƯU ----- */
+        /* ----- THÔNG BÁO (TOAST) ----- */
         #cute-toast {
             position: fixed; bottom: -120px; left: 50%; transform: translateX(-50%);
             background: white; padding: 12px 24px; border-radius: 999px;
@@ -206,6 +208,12 @@
 </head>
 <body class="bg-magic">
 
+    <!-- AUDIO NHẠC NỀN -->
+    <!-- Sử dụng bản nhạc piano lãng mạn miễn phí bản quyền -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://assets.mixkit.co/music/preview/mixkit-romantic-piano-136.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- BẦU TRỜI MÂY TRÔI -->
     <div class="clouds-container">
         <div class="cloud cloud-1"></div>
@@ -213,17 +221,16 @@
     </div>
     <div id="cursor-effects-container"></div>
 
-    <!-- Nút Bật/Tắt Nhạc -->
-    <div id="vinyl-btn" class="vinyl-player" title="Bật/Tắt Nhạc"></div>
+    <!-- ĐĨA THAN ĐIỀU KHIỂN NHẠC (Mặc định pause) -->
+    <div id="vinyl-btn" class="vinyl-player paused hidden-section" title="Bật/Tắt Nhạc Tình Yêu"></div>
 
-    <!-- Thông báo cute (Hoạt động hoàn hảo) -->
+    <!-- THÔNG BÁO -->
     <div id="cute-toast">
         <span class="text-xl" id="toast-icon">🪄</span> <span id="toast-msg">Thông báo</span>
     </div>
 
     <!-- ================= 1. TRANG ĐĂNG NHẬP ================= -->
     <div id="login-section" class="min-h-screen flex items-center justify-center p-4 relative z-50">
-        <!-- Responsive width: w-full, max-w phù hợp mobile -->
         <div class="kawaii-card p-8 sm:p-12 w-full max-w-[400px] text-center relative overflow-hidden">
             <div class="absolute -top-10 -right-10 w-24 h-24 bg-yellow-100 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
             
@@ -268,16 +275,15 @@
     <div id="main-section" class="hidden-section relative z-10">
         
         <div id="uploading-overlay" class="hidden-section fixed inset-0 bg-white/80 backdrop-blur-md z-[9998] flex flex-col items-center justify-center p-4 text-center">
-            <div class="text-6xl mb-4 heart-beat">🚀</div>
-            <h3 class="font-cute text-3xl text-[#ff5c8a]">Đang cất ảnh vào kho...</h3>
+            <div class="text-6xl mb-4 heart-beat">☁️</div>
+            <h3 class="font-cute text-3xl text-[#ff5c8a]">Đang cất ảnh lên mây...</h3>
         </div>
 
-        <!-- PHẦN HEADER CĂN CHỈNH HOÀN HẢO -->
+        <!-- PHẦN HEADER -->
         <section class="min-h-[90vh] flex flex-col items-center justify-center text-center p-4 pt-8">
             <div class="kawaii-card p-6 sm:p-10 md:p-14 max-w-3xl w-full mx-auto relative">
                 <div class="absolute -top-4 -left-4 text-4xl transform -rotate-12 animate-bounce">⭐</div>
                 
-                <!-- Font size tự co giãn theo màn hình -->
                 <h1 class="font-cute text-[2.8rem] sm:text-6xl md:text-7xl text-[#641220] mb-4">
                     Hồ Thái Long
                 </h1>
@@ -306,35 +312,29 @@
             </div>
         </section>
 
-        <!-- PHẦN ĐẾM THỜI GIAN (LƯỚI MOBILE) -->
+        <!-- PHẦN ĐẾM THỜI GIAN -->
         <section id="timer-section" class="py-16 sm:py-20 flex flex-col items-center justify-center px-4 w-full">
             <h2 class="font-cute text-4xl sm:text-5xl text-[#ff5c8a] mb-8 text-center drop-shadow-sm">
                 Đã bám nhau được... 🧸
             </h2>
             
-            <!-- Grid 2x2 trên mobile, Flex 1 hàng trên desktop -->
             <div class="grid grid-cols-2 md:flex md:flex-row justify-center gap-4 sm:gap-6 w-full max-w-[600px] z-10 px-2">
-                
                 <div class="timer-widget w-full md:w-28 md:h-32">
                     <span id="days" class="font-cute text-[2.5rem] sm:text-5xl text-[#ff5c8a] leading-none z-10">0</span>
                     <span class="text-[10px] sm:text-xs font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Ngày</span>
                 </div>
-                
                 <div class="timer-widget w-full md:w-28 md:h-32">
                     <span id="hours" class="font-cute text-[2.5rem] sm:text-5xl text-[#ff5c8a] leading-none z-10">0</span>
                     <span class="text-[10px] sm:text-xs font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Giờ</span>
                 </div>
-                
                 <div class="timer-widget w-full md:w-28 md:h-32">
                     <span id="minutes" class="font-cute text-[2.5rem] sm:text-5xl text-[#ff5c8a] leading-none z-10">0</span>
                     <span class="text-[10px] sm:text-xs font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Phút</span>
                 </div>
-                
                 <div class="timer-widget w-full md:w-28 md:h-32">
                     <span id="seconds" class="font-cute text-[2.5rem] sm:text-5xl text-[#ff5c8a] leading-none z-10">0</span>
                     <span class="text-[10px] sm:text-xs font-bold text-[#ff8fa3] mt-2 z-10 uppercase tracking-widest">Giây</span>
                 </div>
-
             </div>
             
             <div class="mt-10 kawaii-card px-6 py-3 inline-block transform -rotate-1">
@@ -344,38 +344,36 @@
             </div>
         </section>
 
-        <!-- PHÒNG TRANH NHẬT KÝ -->
+        <!-- PHÒNG TRANH NHẬT KÝ (CLOUD) -->
         <section class="py-16 sm:py-20 flex flex-col items-center relative w-full px-4">
             <div class="kawaii-card p-6 sm:p-10 max-w-4xl w-full text-center mb-8 border-dashed">
                 <h2 class="font-cute text-3xl sm:text-[3.5rem] text-[#ff5c8a] mb-2 sm:mb-4">Góc Sống Ảo 📸</h2>
-                <p class="font-bold text-[#ff8fa3] mb-6 text-sm sm:text-lg">Lưu lại ảnh ở đây, mọi người cùng xem được nhé!</p>
+                <p class="font-bold text-[#ff8fa3] mb-6 text-sm sm:text-lg">Ảnh tải lên đây sẽ được lưu trên Cloud cho mọi người cùng xem nhé!</p>
                 
                 <label for="photo-upload" class="cursor-pointer inline-flex items-center justify-center gap-2 btn-jelly py-3 px-6 sm:px-8 text-base sm:text-xl w-full sm:w-auto">
-                    <span class="text-2xl">🖼️</span> 
-                    <span>Treo Thêm Ảnh Nào</span>
+                    <span class="text-2xl">☁️</span> 
+                    <span>Tải Ảnh Lên Cloud Mây</span>
                 </label>
                 <input type="file" id="photo-upload" class="hidden" accept="image/*">
             </div>
             
-            <!-- Khu vực hiển thị ảnh tự động bẻ cột -->
             <div id="polaroid-gallery" class="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-6 max-w-[1200px] w-full">
+                <!-- Nội dung ảnh Cloud sẽ đổ vào đây -->
                 <div id="empty-state" class="col-span-full text-center py-12">
-                    <div class="text-[4rem] sm:text-[5rem] mb-2 animate-bounce">📦</div>
-                    <p class="font-cute text-2xl sm:text-3xl text-[#ff8fa3]">Khung ảnh đang trống rỗng, úp ảnh đi nha!</p>
+                    <div class="text-[4rem] sm:text-[5rem] mb-2 animate-bounce">☁️</div>
+                    <p class="font-cute text-2xl sm:text-3xl text-[#ff8fa3]">Đám mây kỷ niệm đang trống rỗng, úp ảnh đi nha!</p>
                 </div>
             </div>
         </section>
 
         <!-- LỜI HỨA CỦA LONG -->
         <section class="py-16 sm:py-20 flex flex-col items-center justify-center p-4 mb-10 w-full">
-            <!-- Box thư bo hẹp lại vừa vặn điện thoại -->
             <div class="bg-[#fffdf9] p-6 sm:p-10 md:p-14 max-w-2xl w-full relative rounded-3xl shadow-lg border-[6px] sm:border-[10px] border-white outline outline-2 sm:outline-4 outline-[#ffb3c6]">
-                
                 <h2 class="font-cute text-4xl sm:text-[3rem] text-[#ff5c8a] mb-6 font-normal text-center">Bức Thư Tình 📝</h2>
                 
                 <div class="font-semibold text-base sm:text-xl text-[#641220] text-justify space-y-4 sm:space-y-6 leading-relaxed">
                     <p>Gửi bé Thảo đáng yêu nhất quả đất của anh,</p>
-                    <p>Người ta nói bắt đầu một mối quan hệ thì dễ, nhưng giữ được nhau mới khó.Nhưng từ cái ngày 01/02/2026 ấy,anh đã biết mình chẳng muốn đi đâu tìm kiếm nữa, vì anh đã "bám" trúng bến đỗ bình yên nhất rồi 🍓.</p>
+                    <p>Người ta nói bắt đầu một mối quan hệ thì dễ, nhưng giữ được nhau mới khó. Nhưng từ cái ngày 01/02/2026 ấy, anh đã biết mình chẳng muốn đi đâu tìm kiếm nữa, vì anh đã "bám" trúng bến đỗ bình yên nhất rồi 🍓.</p>
                     <p>Anh hứa sẽ luôn nhường nhịn em (dù đôi khi em hơi ngang bướng), sẽ luôn nắm tay em qua những con đường đông đúc, và sẽ mua đồ ăn ngon cho em mỗi khi em dỗi 🧋.</p>
                     <p>Cảm ơn Thảo vì đã cho Long cơ hội được bước vào cuộc sống của em. Hãy để anh tiếp tục "bám" lấy em không chỉ bây giờ, mà là rất, rất lâu về sau nữa nhé! 💖</p>
                 </div>
@@ -387,125 +385,118 @@
             </div>
         </section>
 
-        <!-- FOOTER -->
         <footer class="text-center py-8 text-[#ff8fa3] font-bold text-sm sm:text-base border-t border-white/40">
             <p>Xây dựng bằng 100% tình yêu và phép thuật ✨</p>
         </footer>
-
     </div>
 
     <script>
-        // ================= XỬ LÝ THÔNG BÁO (TOAST) HOÀN HẢO =================
+        // ================= BIẾN TOÀN CỤC & ÂM NHẠC =================
+        const bgMusic = document.getElementById('bg-music');
+        const vinylBtn = document.getElementById('vinyl-btn');
         let toastTimeout; 
 
-        const showToast = (message, icon = "🪄") => {
-            const toast = document.getElementById('cute-toast');
-            document.getElementById('toast-msg').innerText = message;
-            document.getElementById('toast-icon').innerText = icon;
-            
-            // Bước 1: Hiện thông báo bằng cách thêm class show-toast
-            toast.classList.add('show-toast');
-            
-            // Bước 2: Xóa bộ đếm thời gian cũ nếu user bấm liên tục
-            if(toastTimeout) {
-                clearTimeout(toastTimeout);
-            }
-            
-            // Bước 3: Hẹn giờ đúng 3 giây (3000ms) sau sẽ tự động gỡ class để ẩn đi
-            toastTimeout = setTimeout(() => {
-                toast.classList.remove('show-toast');
-            }, 3000); 
-        };
+        // Hàm bật nhạc
+        function playMusic() {
+            bgMusic.play().then(() => {
+                vinylBtn.classList.remove('paused');
+            }).catch(e => {
+                console.log("Trình duyệt chặn tự phát nhạc, người dùng cần bấm vào đĩa than.");
+            });
+        }
 
-        // ================= HIỆU ỨNG CHUỘT LẤP LÁNH =================
-        const cursorContainer = document.getElementById('cursor-effects-container');
-        const sparkEmojis = ['✨', '⭐', '💖', '🫧'];
-        let lastSparkTime = 0;
-
-        document.addEventListener('mousemove', function(e) {
-            const now = Date.now();
-            if (now - lastSparkTime > 60) { 
-                const spark = document.createElement('div');
-                spark.className = 'sparkle-trail';
-                spark.innerText = sparkEmojis[Math.floor(Math.random() * sparkEmojis.length)];
-                spark.style.left = (e.pageX - 10) + 'px';
-                spark.style.top = (e.pageY - 10) + 'px';
-                cursorContainer.appendChild(spark);
-                setTimeout(() => spark.remove(), 800);
-                lastSparkTime = now;
-            }
-        });
-
-        // ================= HIỆU ỨNG NỔ TRÁI TIM =================
-        document.body.addEventListener('click', function(e) {
-            if(e.target.tagName === 'INPUT' || e.target.closest('label') || e.target.closest('button') || e.target.id === 'vinyl-btn') return;
-
-            for(let i=0; i<4; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'click-burst';
-                particle.innerText = ['❤️', '🍓', '🎀'][Math.floor(Math.random()*3)];
-                
-                const angle = Math.random() * Math.PI * 2;
-                const distance = Math.random() * 40 + 10;
-                particle.style.left = (e.pageX + Math.cos(angle)*distance) + 'px';
-                particle.style.top = (e.pageY + Math.sin(angle)*distance) + 'px';
-                particle.style.animationDuration = (0.5 + Math.random() * 0.4) + 's';
-                
-                cursorContainer.appendChild(particle);
-                setTimeout(() => particle.remove(), 900);
-            }
-        });
-
-        // ================= ĐĨA THAN NHẠC =================
-        const vinylBtn = document.getElementById('vinyl-btn');
-        let isPlaying = true;
+        // Bật tắt nhạc bằng đĩa than
         vinylBtn.addEventListener('click', () => {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
+            if (bgMusic.paused) {
+                bgMusic.play();
                 vinylBtn.classList.remove('paused');
                 showToast("Đã bật nhạc tình yêu", "🎵");
             } else {
+                bgMusic.pause();
                 vinylBtn.classList.add('paused');
                 showToast("Đã tắt nhạc", "🤫");
             }
         });
 
-        // ================= FIREBASE CLOUD SETUP =================
+        const showToast = (message, icon = "🪄") => {
+            const toast = document.getElementById('cute-toast');
+            document.getElementById('toast-msg').innerText = message;
+            document.getElementById('toast-icon').innerText = icon;
+            toast.classList.add('show-toast');
+            if(toastTimeout) clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { toast.classList.remove('show-toast'); }, 3000); 
+        };
+
+        // ================= HIỆU ỨNG TƯƠNG TÁC =================
+        const cursorContainer = document.getElementById('cursor-effects-container');
+        document.addEventListener('mousemove', function(e) {
+            if (Date.now() - window.lastSparkTime > 60) { 
+                const spark = document.createElement('div');
+                spark.className = 'sparkle-trail';
+                spark.innerText = ['✨', '⭐', '💖', '🫧'][Math.floor(Math.random() * 4)];
+                spark.style.left = (e.pageX - 10) + 'px'; spark.style.top = (e.pageY - 10) + 'px';
+                cursorContainer.appendChild(spark);
+                setTimeout(() => spark.remove(), 800);
+                window.lastSparkTime = Date.now();
+            }
+        });
+
+        document.body.addEventListener('click', function(e) {
+            if(e.target.tagName === 'INPUT' || e.target.closest('label') || e.target.closest('button') || e.target.id === 'vinyl-btn') return;
+            for(let i=0; i<4; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'click-burst';
+                particle.innerText = ['❤️', '🍓', '🎀'][Math.floor(Math.random()*3)];
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 40 + 10;
+                particle.style.left = (e.pageX + Math.cos(angle)*distance) + 'px';
+                particle.style.top = (e.pageY + Math.sin(angle)*distance) + 'px';
+                particle.style.animationDuration = (0.5 + Math.random() * 0.4) + 's';
+                cursorContainer.appendChild(particle);
+                setTimeout(() => particle.remove(), 900);
+            }
+        });
+
+        // ================= THIẾT LẬP FIREBASE CLOUD (TUÂN THỦ NGHIÊM NGẶT RULE) =================
+        // Sử dụng biến môi trường hệ thống cung cấp
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'long-thao-magic-app';
         let db, auth;
-        // Biến kiểm tra xem có kết nối đám mây thành công không
-        let isCloudConnected = false; 
 
-        const initFirebase = async () => {
+        // BƯỚC 1: Khởi tạo Firebase ở ngoài cùng
+        if (firebaseConfig && !firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        if(firebase.apps.length) {
+            auth = firebase.auth();
+            db = firebase.firestore();
+        }
+
+        // BƯỚC 2: Xác thực (Auth) - Bắt buộc chạy trước khi truy vấn Data
+        const initAuthAndFetchData = async () => {
+            if (!auth || !db) return; // Tránh lỗi nếu không có mạng
+            
             try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'long-thao-magic-app';
-                
-                if (!firebaseConfig) throw new Error("Missing Firebase Config");
-                if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-                
-                auth = firebase.auth();
-                db = firebase.firestore();
-
+                // Đăng nhập bằng token hệ thống hoặc ẩn danh
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await auth.signInWithCustomToken(__initial_auth_token);
                 } else {
                     await auth.signInAnonymously();
                 }
 
+                // Thiết lập lắng nghe trạng thái đăng nhập
                 auth.onAuthStateChanged((user) => {
+                    // BƯỚC 3: Có User rồi mới bắt đầu gọi dữ liệu (Rule 3)
                     if (user) {
-                        isCloudConnected = true;
-                        listenToPhotos(appId);
+                        listenToCloudPhotos();
                     }
                 });
-
             } catch (error) {
-                console.warn("Chạy ở chế độ ngoại tuyến (Offline Mode).");
-                isCloudConnected = false;
+                console.error("Lỗi xác thực Firebase:", error);
             }
         };
 
-        // ================= APP LOGIC (LOGIN & TIMER) =================
+        // ================= APP LOGIC (ĐĂNG NHẬP & CLOUD) =================
         window.handleLogin = function() {
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value.trim();
@@ -516,12 +507,16 @@
                 document.getElementById('login-section').classList.add('hidden-section');
                 document.getElementById('loading-section').classList.remove('hidden-section');
 
-                initFirebase(); 
+                // Bắt đầu quy trình kết nối Đám Mây khi user ấn Đăng Nhập
+                initAuthAndFetchData(); 
 
                 setTimeout(() => {
                     document.getElementById('loading-section').classList.add('hidden-section');
                     document.getElementById('main-section').classList.remove('hidden-section');
+                    document.getElementById('vinyl-btn').classList.remove('hidden-section'); // Hiện đĩa than
+                    
                     startTimer(); 
+                    playMusic(); // Kích hoạt phát nhạc khi chuyển trang
                     showToast("Chào mừng Long & Thảo về nhà", "🥰");
                 }, 2000);
             } else {
@@ -537,23 +532,16 @@
             if (e.key === 'Enter') handleLogin();
         });
 
+        // Đếm giờ
         function startTimer() {
-            // Ngày kỷ niệm: 01/02/2026 (Trong JS Tháng 1 là Tháng 2)
             const startDate = new Date(2026, 1, 1, 0, 0, 0).getTime(); 
-            
             setInterval(() => {
-                const now = new Date().getTime();
-                const difference = now - startDate;
-                
+                const difference = new Date().getTime() - startDate;
                 if (difference < 0) {
-                    // Nếu ngày hiện tại chưa đến 01/02/2026, hiển thị 0
-                    document.getElementById('days').innerText = "0";
-                    document.getElementById('hours').innerText = "00";
-                    document.getElementById('minutes').innerText = "00";
-                    document.getElementById('seconds').innerText = "00";
+                    document.getElementById('days').innerText = "0"; document.getElementById('hours').innerText = "00";
+                    document.getElementById('minutes').innerText = "00"; document.getElementById('seconds').innerText = "00";
                     return; 
                 }
-                
                 document.getElementById('days').innerText = Math.floor(difference / (1000 * 60 * 60 * 24));
                 document.getElementById('hours').innerText = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
                 document.getElementById('minutes').innerText = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
@@ -561,35 +549,41 @@
             }, 1000);
         }
 
-        // ================= XỬ LÝ UP ẢNH & FALLBACK (KHÔNG BÁO LỖI NỮA) =================
-        function listenToPhotos(appId) {
-            const collectionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('photos');
+        // Lấy dữ liệu từ Cloud (Rule 1 & Rule 2)
+        function listenToCloudPhotos() {
+            // Path chuẩn bắt buộc cho Public Data
+            const collectionPath = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('photos');
             
-            collectionRef.onSnapshot(snapshot => {
+            // Query đơn giản, KHÔNG dùng orderBy ở đây để tránh lỗi Index
+            collectionPath.onSnapshot(snapshot => {
                 const gallery = document.getElementById('polaroid-gallery');
                 let photos = [];
-                snapshot.forEach(doc => photos.push({ id: doc.id, ...doc.data() }));
                 
+                snapshot.forEach(doc => {
+                    photos.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Sắp xếp dữ liệu bằng Javascript (Rule 2)
                 photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
                 if (photos.length === 0) return;
 
-                gallery.innerHTML = ''; 
+                gallery.innerHTML = ''; // Xóa chữ trống
                 photos.forEach(photo => renderCutePhoto(photo.base64, photo.caption, gallery));
-            }, error => console.error(error));
+            }, error => {
+                console.error("Lỗi kéo ảnh từ Cloud:", error);
+            });
         }
 
         function renderCutePhoto(imgSrc, caption, container) {
-            // Xóa empty state nếu có
             const emptyState = document.getElementById('empty-state');
             if(emptyState) emptyState.remove();
 
             const div = document.createElement('div');
-            const randomRotation = (Math.random() * 4 - 2).toFixed(1); // Góc nghiêng tinh tế hơn
+            const randomRotation = (Math.random() * 4 - 2).toFixed(1); 
             
             div.className = `scrapbook-img`;
             div.style.transform = `rotate(${randomRotation}deg)`;
-            
             div.innerHTML = `
                 <div class="washi-tape"></div>
                 <div class="img-container">
@@ -599,10 +593,10 @@
                     <p class="font-cute text-2xl sm:text-3xl text-[#ff5c8a]">${caption}</p>
                 </div>
             `;
-            // Thêm vào đầu danh sách (ảnh mới nhất lên đầu)
-            container.prepend(div);
+            container.appendChild(div);
         }
 
+        // Tải ảnh lên Cloud
         const uploadInput = document.getElementById('photo-upload');
         const cuteCaptions = ["Khoảnh khắc cưng xỉu 💕", "Hai đứa mình nè 🍓", "Yêu Thảo nhất ✨", "Bám nhau mãi nhé 🫂", "Xinh gái quá chừng 🌸", "Đáng iu ghê 😍"];
 
@@ -616,25 +610,25 @@
                 const base64Data = await compressImage(file);
                 const randomCaption = cuteCaptions[Math.floor(Math.random() * cuteCaptions.length)];
                 
-                if (isCloudConnected && auth && auth.currentUser) {
-                    // CÓ MẠNG ĐÁM MÂY: Lưu vĩnh viễn
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'long-thao-magic-app';
-                    const collectionRef = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('photos');
+                // Kiểm tra nếu đã xác thực với Cloud
+                if (auth && auth.currentUser && db) {
+                    const collectionPath = db.collection('artifacts').doc(appId).collection('public').doc('data').collection('photos');
                     
-                    await collectionRef.add({
+                    // Thêm dữ liệu lên Cloud
+                    await collectionPath.add({
                         base64: base64Data,
                         caption: randomCaption,
                         timestamp: Date.now()
                     });
-                    showToast("Ting ting! Kỷ niệm đã lưu vĩnh viễn", "☁️");
+                    showToast("Đã lưu ảnh lên Đám Mây", "☁️");
                 } else {
-                    // KHÔNG CÓ MẠNG (FALLBACK): Hiển thị luôn trên máy của người dùng (không báo lỗi)
+                    // Fallback nếu web chạy offline
                     const gallery = document.getElementById('polaroid-gallery');
                     renderCutePhoto(base64Data, randomCaption, gallery);
                     showToast("Đã thêm ảnh (Chế độ xem trước)", "📸");
                 }
             } catch (error) {
-                console.error("Lỗi:", error);
+                console.error("Lỗi tải ảnh:", error);
                 showToast("Lỗi rùi, thử lại nha bé", "🥺");
             } finally {
                 document.getElementById('uploading-overlay').classList.add('hidden-section');
@@ -642,6 +636,7 @@
             }
         });
 
+        // Nén ảnh trước khi up lên Cloud (Giới hạn kích thước Database)
         function compressImage(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -651,7 +646,7 @@
                     img.src = event.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_SIZE = 600; // Giảm nhẹ size để render mượt hơn trên mọi thiết bị
+                        const MAX_SIZE = 600; 
                         let width = img.width, height = img.height;
 
                         if (width > height && width > MAX_SIZE) {
